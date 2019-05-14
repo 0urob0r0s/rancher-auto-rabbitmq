@@ -1,5 +1,5 @@
 FROM rabbitmq:3.5.6
-MAINTAINER Dan MacDonald <dsvmacdonald@nuarch.com>
+MAINTAINER Joao Guimaraes <joao@linux.com.uy>
 
 RUN rabbitmq-plugins enable --offline rabbitmq_management rabbitmq_web_stomp rabbitmq_stomp
 
