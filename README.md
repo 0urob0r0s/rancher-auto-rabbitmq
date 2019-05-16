@@ -1,4 +1,4 @@
-# Distributable Fetchmail based POP3 to MQ Gateway
+# Automatic RabbitMQ Rancher based Cluster
 
  **Overview**
 
