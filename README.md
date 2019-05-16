@@ -1,26 +1,67 @@
-# About this Repo
-This is a Git repo for a customized version of the official Docker image for RabbitMQ, that allows RabbitMQ to be run as a cluster within a Rancher service.
+# Distributable Fetchmail based POP3 to MQ Gateway
 
-# Usage
+ **Overview**
 
-1. Refer to [Official RabbitMQ Docker Repository](https://hub.docker.com/_/rabbitmq/) for basic instructions.
-1. Set Docker *hostname* to service name, using Rancher's internal DNS FQDN (e.g. rabbit.rancher.internal)
-1. Provide Rancher service name to environment variable *RANCHER_SERVICE_NAME*
+This container provides a Single instance / Automatic Clustered RabbitMQ Service.
 
-## Example docker-compose.yml
+**Caveats**
 
-    rabbit:
-      ports:
-        - 15672/tcp
-      hostname: rabbit.rancher.internal
-      environment:
-        RANCHER_SERVICE_NAME: rabbit
-        RABBITMQ_ERLANG_COOKIE: "RABBITCOOKIE"
-      labels:
-        io.rancher.container.dns: true
-      image: dsvmacdonald/rancher-rabbitmq
+This docker image will not work on standard docker environments as it relies on Rancher's Metadata Service for the autodiscovery feature. 
 
-## Example rancher-compose.yml
+**Features**
 
-    rabbit:
-      scale: 3
+- Fully configurable through Docker ENV vars
+- Clustered RabbitMQ support
+- Automatic node Discovery
+
+**Usage**
+
+*Example Docker Compose - Multinode Cluster deployment*
+
+```
+version: '2'
+services:
+  MessageQueue:
+    image: rancher-auto-rabbitmq:latest
+    environment:
+      RABBITMQ_ERLANG_COOKIE: abcdefgh
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    stdin_open: true
+    volumes:
+    - /opt/volumes/rabbitmq:/var/lib/rabbitmq
+    tty: true
+    ports:
+    - 15672:15672/tcp
+    - 5672:5672/tcp
+    labels:
+      io.rancher.scheduler.global: 'true'
+      io.rancher.container.hostname_override: container_name
+```
+
+*Example Rancher Compose - Healthcheck Settings*
+
+```
+version: '2'
+services:
+  MessageQueue:
+    retain_ip: true
+    start_on_create: true
+    health_check:
+      response_timeout: 2000
+      healthy_threshold: 2
+      port: 5672
+      unhealthy_threshold: 3
+      initializing_timeout: 60000
+      interval: 2000
+      strategy: recreate
+      reinitializing_timeout: 60000
+```
+
+**Notes**
+
+RABBITMQ_ERLANG_COOKIE is required for Node Clustering
+If not specified, user/pass = guest/guest.
+
+
+**Head over the repo `docker-adv-rt` for a more complex example.**
