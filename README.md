@@ -60,8 +60,8 @@ services:
 
 **Notes**
 
-RABBITMQ_ERLANG_COOKIE is required for Node Clustering
-If not specified, user/pass = guest/guest.
+- RABBITMQ_ERLANG_COOKIE is required for Node Clustering.
+- If not specified, user/pass = guest/guest.
 
 
 **Head over the repo `docker-adv-rt` for a more complex example.**
